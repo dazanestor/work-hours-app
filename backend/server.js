@@ -9,6 +9,7 @@ const port = process.env.PORT || 5000;
 
 // Configuración de la base de datos
 const { Pool } = require('pg');
+const bcrypt = require('bcrypt');
 const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
@@ -24,6 +25,28 @@ pool.connect((err) => {
     console.log('Conectado a la base de datos PostgreSQL');
   }
 });
+
+// Función para crear un usuario administrador predeterminado
+const createDefaultAdmin = async () => {
+  try {
+    const result = await pool.query("SELECT * FROM users WHERE rol = 'admin'");
+    if (result.rows.length === 0) {
+      const hashedPassword = await bcrypt.hash('admin', 10);
+      await pool.query(
+        "INSERT INTO users (nombre, apellido, correo, password, rol) VALUES ($1, $2, $3, $4, $5)",
+        ['Admin', 'User', 'admin@example.com', hashedPassword, 'admin']
+      );
+      console.log("Usuario administrador predeterminado creado con correo 'admin@example.com' y contraseña 'admin'");
+    } else {
+      console.log("Usuario administrador ya existe. No se creó un nuevo usuario.");
+    }
+  } catch (error) {
+    console.error("Error creando el usuario administrador predeterminado:", error.message);
+  }
+};
+
+// Llamada a la función para crear el administrador
+createDefaultAdmin();
 
 // Configuración de Redis (opcional)
 const redis = require('redis');
