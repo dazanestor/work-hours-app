@@ -1,0 +1,30 @@
+/* src/theme.css */
+
+/* Estilo para el modo claro */
+body.light {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+/* Estilo para el modo oscuro */
+body.dark {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+/* Botones y otros componentes */
+button {
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+}
+
+button.light {
+  background-color: #ffffff;
+  color: #121212;
+}
+
+button.dark {
+  background-color: #333333;
+  color: #ffffff;
+}

@@ -1,77 +1,52 @@
+// src/App.js
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { AuthProvider } from './AuthContext';
+import { ThemeProvider, useTheme } from './ThemeContext';
+import Login from './components/Login';
+import Register from './components/Register';
+import WorkHoursForm from './components/WorkHoursForm';
+import WorkHoursList from './components/WorkHoursList';
+import AdminDashboard from './components/AdminDashboard';
+import CustomCalendar from './components/Calendar';
+import './theme.css'; // Estilos para temas claro y oscuro
 
-import React, { useState, useEffect } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-
-function App() {
-  const [hours, setHours] = useState('');
-  const [task, setTask] = useState('');
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [holidays, setHolidays] = useState([]);
-
-  const fetchHolidays = async () => {
-    const response = await fetch('http://localhost:5000/holidays');
-    const data = await response.json();
-    setHolidays(data);
-  };
+const ThemeToggleButton = () => {
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
-    fetchHolidays();
-  }, []);
-
-  const handleRegister = async () => {
-    if (!selectedDate) {
-      alert("Seleccione una fecha válida.");
-      return;
-    }
-    if (hours <= 0) {
-      alert("Las horas deben ser mayores a 0.");
-      return;
-    }
-
-    const response = await fetch('http://localhost:5000/register-hours', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userId: 1,
-        projectId: 1,
-        date: selectedDate.toISOString().split('T')[0],
-        hours,
-        task
-      })
-    });
-
-    if (response.ok) {
-      alert("Horas registradas con éxito");
-    } else {
-      const data = await response.json();
-      alert("Error: " + data.error);
-    }
-  };
+    document.body.className = theme; // Aplica el tema al body
+  }, [theme]);
 
   return (
-    <div>
-      <h1>Registro de Horas</h1>
-      <DatePicker
-        selected={selectedDate}
-        onChange={(date) => setSelectedDate(date)}
-        placeholderText="Selecciona una fecha"
-      />
-      <input
-        type="number"
-        placeholder="Horas"
-        value={hours}
-        onChange={(e) => setHours(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Tarea"
-        value={task}
-        onChange={(e) => setTask(e.target.value)}
-      />
-      <button onClick={handleRegister}>Registrar</button>
-    </div>
+    <button onClick={toggleTheme} className={theme}>
+      {theme === 'light' ? 'Modo Oscuro' : 'Modo Claro'}
+    </button>
   );
-}
+};
+
+const App = () => (
+  <ThemeProvider>
+    <AuthProvider>
+      <Router>
+        <nav>
+          <Link to="/work-hours">Registrar Horas</Link> | 
+          <Link to="/work-hours/list">Ver Horas</Link> | 
+          <Link to="/admin">Panel de Administración</Link> | 
+          <Link to="/calendar">Calendario de Días No Laborables</Link>
+          <ThemeToggleButton /> {/* Botón para alternar el tema */}
+        </nav>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/work-hours" element={<WorkHoursForm />} />
+          <Route path="/work-hours/list" element={<WorkHoursList />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/calendar" element={<CustomCalendar />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
+  </ThemeProvider>
+);
 
 export default App;

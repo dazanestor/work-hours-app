@@ -1,0 +1,11 @@
+/* src/components/Calendar.css */
+
+/* Estilo para los días de fin de semana */
+.weekend {
+  background-color: #ffe6e6; /* Fondo rojo claro para fines de semana */
+}
+
+/* Estilo para los días festivos */
+.holiday {
+  background-color: #ffcccb; /* Fondo rojo suave para días festivos */
+}

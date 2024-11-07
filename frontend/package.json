@@ -1,0 +1,21 @@
+{
+  "name": "work-hours-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for work hours tracking application",
+  "main": "index.js",
+  "scripts": {
+    "start": "PORT=3030 react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3",
+    "react-datepicker": "^3.6.0",
+    "axios": "^0.21.1"
+  },
+  "author": "",
+  "license": "ISC"
+}
