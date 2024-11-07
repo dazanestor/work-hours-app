@@ -1,10 +1,11 @@
 const express = require('express');
 const { registerUser, loginUser, changePassword } = require('../controllers/authController');
-const { authenticateToken } = require('../middleware/authMiddleware');
+const { authenticateToken, requireAdmin } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.post('/register', registerUser);
+// Ruta protegida solo para administradores
+router.post('/register', authenticateToken, requireAdmin, registerUser);
 router.post('/login', loginUser);
 router.post('/change-password', authenticateToken, changePassword);
 

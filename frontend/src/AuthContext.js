@@ -1,16 +1,29 @@
-// src/ProtectedRoute.js
-import React, { useContext } from 'react';
-import { AuthContext } from './AuthContext';
-import { Navigate } from 'react-router-dom';
+// src/AuthContext.js
+import React, { createContext, useState, useEffect } from 'react';
 
-const ProtectedRoute = ({ children, role }) => {
-  const { user } = useContext(AuthContext);
+export const AuthContext = createContext();
 
-  if (!user || (role && user.role !== role)) {
-    return <Navigate to="/login" replace />;
-  }
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
 
-  return children;
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (storedUser) setUser(storedUser);
+  }, []);
+
+  const login = (userData) => {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData)); // Guardar el usuario en localStorage
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('user');
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
-
-export default ProtectedRoute;

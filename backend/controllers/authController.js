@@ -4,11 +4,21 @@ const pool = require('../config/db');
 
 const registerUser = async (req, res) => {
   const { nombre, apellido, correo, password, rol } = req.body;
+
+  // Lista de roles permitidos, pero forzamos "user" si el rol no es asignado por un admin
+  const allowedRoles = ['user', 'admin'];
+  let roleToAssign = 'user';
+
+  // Verificar si el usuario autenticado es admin y rol proporcionado es válido
+  if (req.user && req.user.role === 'admin' && allowedRoles.includes(rol)) {
+    roleToAssign = rol; // Permitir asignar el rol especificado si es un admin
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
   try {
     const result = await pool.query(
       'INSERT INTO users (nombre, apellido, correo, password, rol) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [nombre, apellido, correo, hashedPassword, rol]
+      [nombre, apellido, correo, hashedPassword, roleToAssign]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {

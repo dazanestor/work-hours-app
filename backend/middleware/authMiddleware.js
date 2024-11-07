@@ -6,7 +6,7 @@ const authenticateToken = (req, res, next) => {
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);
-    req.user = user;
+    req.user = { id: user.id, role: user.role };  // Solo agrega `id` y `role` al objeto `req.user`
     next();
   });
 };
